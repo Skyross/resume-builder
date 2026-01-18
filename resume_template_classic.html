@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Resume (Classic)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Georgia, 'Times New Roman', serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #fff;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 40px 50px;
+            background: #fff;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 4px double #1a4d2e;
+        }
+
+        h1 {
+            font-size: 38px;
+            color: #1a4d2e;
+            margin-bottom: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .title {
+            font-size: 18px;
+            color: #2c5f2d;
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-style: italic;
+        }
+
+        .contact {
+            font-size: 13px;
+            color: #444;
+            line-height: 1.8;
+        }
+
+        .contact-divider {
+            margin: 0 8px;
+            color: #1a4d2e;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: #1a4d2e;
+            margin-top: 28px;
+            margin-bottom: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 2px solid #1a4d2e;
+            padding-bottom: 6px;
+        }
+
+        .summary {
+            font-size: 15px;
+            line-height: 1.8;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            text-align: justify;
+            text-indent: 30px;
+        }
+
+        .experience-item {
+            margin-bottom: 25px;
+            page-break-inside: avoid;
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 8px;
+        }
+
+        .company-left {
+            flex: 1;
+        }
+
+        .company {
+            font-size: 16px;
+            font-weight: 700;
+            color: #1a4d2e;
+            font-style: italic;
+        }
+
+        .job-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-top: 2px;
+        }
+
+        .duration {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        .job-description {
+            font-size: 14px;
+            line-height: 1.7;
+            color: #3c3c3c;
+            margin-top: 10px;
+        }
+
+        .job-description ul {
+            margin-left: 25px;
+            margin-top: 8px;
+        }
+
+        .job-description li {
+            margin-bottom: 7px;
+            text-align: justify;
+        }
+
+        .skills-section {
+            margin-top: 20px;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .skill-item {
+            background: #f5f5f5;
+            padding: 6px 14px;
+            border: 1px solid #1a4d2e;
+            font-size: 13px;
+            color: #1a4d2e;
+            font-weight: 600;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .certifications {
+            margin-top: 12px;
+        }
+
+        .cert-item {
+            font-size: 14px;
+            color: #2c2c2c;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .cert-item:before {
+            content: ">";
+            position: absolute;
+            left: 5px;
+            color: #1a4d2e;
+            font-weight: bold;
+        }
+
+        .education-item {
+            margin-bottom: 15px;
+        }
+
+        .school {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a4d2e;
+            font-style: italic;
+        }
+
+        .degree {
+            font-size: 14px;
+            color: #2c2c2c;
+            margin-top: 2px;
+        }
+
+        .edu-duration {
+            font-size: 13px;
+            color: #666;
+            font-style: italic;
+        }
+
+        .highlight {
+            font-weight: 700;
+            color: #1a4d2e;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>{{ name }}</h1>
+            <div class="title">{{ title }}</div>
+            <div class="contact">
+                {% if contact.email %}{{ contact.email }}{% endif %}
+                {% if contact.email and (contact.linkedin or contact.phone or contact.location) %}<span class="contact-divider">•</span>{% endif %}
+                {% if contact.linkedin %}{{ contact.linkedin }}{% endif %}
+                {% if contact.linkedin and (contact.phone or contact.location) %}<span class="contact-divider">•</span>{% endif %}
+                {% if contact.phone %}{{ contact.phone }}{% endif %}
+                {% if contact.phone and contact.location %}<span class="contact-divider">•</span>{% endif %}
+                {% if contact.location %}{{ contact.location }}{% endif %}
+            </div>
+        </header>
+
+        <section class="summary-section">
+            <h2>Professional Summary</h2>
+            <div class="summary">
+                {{ summary }}
+            </div>
+        </section>
+
+        <section class="experience-section">
+            <h2>Professional Experience</h2>
+
+            {% for job in experience %}
+            <div class="experience-item">
+                <div class="company-header">
+                    <div class="company-left">
+                        <div class="company">{{ job.company }}</div>
+                        <div class="job-title">{{ job.title }}</div>
+                    </div>
+                    <div class="duration">{{ job.start_date }} - {{ job.end_date }}</div>
+                </div>
+                <div class="job-description">
+                    {% if job.highlights %}
+                    <ul>
+                        {% for item in job.highlights %}
+                        <li>{% if item.label %}<span class="highlight">{{ item.label }}</span> {% endif %}{{ item.description }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% elif job.description %}
+                    {{ job.description }}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </section>
+
+        <section class="skills-section">
+            <h2>Technical Skills</h2>
+            <div class="skills-container">
+                {% for skill in skills %}
+                <div class="skill-item">{{ skill }}</div>
+                {% endfor %}
+            </div>
+        </section>
+
+        {% if certifications %}
+        <section class="certifications-section">
+            <h2>{{ certifications_title | default('Certifications') }}</h2>
+            <div class="certifications">
+                {% for cert in certifications %}
+                <div class="cert-item">{{ cert }}</div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <section class="education-section">
+            <h2>Education</h2>
+            {% for edu in education %}
+            <div class="education-item">
+                <div class="school">{{ edu.school }}</div>
+                <div class="degree">{{ edu.degree }}</div>
+                <div class="edu-duration">{{ edu.start_year }} - {{ edu.end_year }}</div>
+            </div>
+            {% endfor %}
+        </section>
+    </div>
+</body>
+</html>

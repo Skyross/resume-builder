@@ -1,0 +1,19 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.idea/
+
+# Virtual environments
+.venv
+
+# Output directory (generated PDFs)
+output/
+
+# Personal data files (keep only the example)
+resume_data.json
+my_resume.json
+*.pdf

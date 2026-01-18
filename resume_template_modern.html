@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Resume (Modern)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #fff;
+        }
+
+        .container {
+            display: flex;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            width: 280px;
+            padding: 40px 30px;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 40px 40px;
+        }
+
+        .profile-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .title {
+            font-size: 14px;
+            opacity: 0.95;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .sidebar h2 {
+            font-size: 16px;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #fff;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 8px;
+        }
+
+        .sidebar h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .contact-item {
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            word-break: break-word;
+        }
+
+        .skill-item {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 20px;
+            font-size: 12px;
+            text-align: center;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .cert-item {
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+            line-height: 1.5;
+            padding-left: 12px;
+            border-left: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .main-content h2 {
+            font-size: 20px;
+            color: #667eea;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 8px;
+        }
+
+        .main-content h2:first-of-type {
+            margin-top: 0;
+        }
+
+        .summary {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #444;
+            margin-bottom: 20px;
+            text-align: justify;
+        }
+
+        .experience-item {
+            margin-bottom: 22px;
+        }
+
+        .job-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin-bottom: 6px;
+        }
+
+        .job-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2c3e50;
+        }
+
+        .company {
+            font-size: 17px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 4px;
+        }
+
+        .duration {
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+            white-space: nowrap;
+        }
+
+        .job-description {
+            font-size: 13px;
+            line-height: 1.7;
+            color: #444;
+            margin-top: 10px;
+        }
+
+        .job-description ul {
+            margin-left: 18px;
+            margin-top: 8px;
+        }
+
+        .job-description li {
+            margin-bottom: 6px;
+        }
+
+        .highlight {
+            color: #667eea;
+            font-weight: 700;
+        }
+
+        .education-item {
+            margin-bottom: 15px;
+        }
+
+        .degree {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .school {
+            font-size: 14px;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .edu-duration {
+            font-size: 12px;
+            color: #888;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <aside class="sidebar">
+            <div class="profile-section">
+                <h1>{{ name }}</h1>
+                <div class="title">{{ title }}</div>
+            </div>
+
+            <section class="contact-section">
+                <h2>Contact</h2>
+                {% if contact.email %}<div class="contact-item">{{ contact.email }}</div>{% endif %}
+                {% if contact.linkedin %}<div class="contact-item">{{ contact.linkedin }}</div>{% endif %}
+                {% if contact.phone %}<div class="contact-item">{{ contact.phone }}</div>{% endif %}
+                {% if contact.website %}<div class="contact-item">{{ contact.website }}</div>{% endif %}
+                {% if contact.location %}<div class="contact-item">{{ contact.location }}</div>{% endif %}
+            </section>
+
+            <section class="skills-section">
+                <h2>Skills</h2>
+                {% for skill in skills %}
+                <div class="skill-item">{{ skill }}</div>
+                {% endfor %}
+            </section>
+
+            {% if certifications %}
+            <section class="certifications-section">
+                <h2>{{ certifications_title | default('Certifications') }}</h2>
+                {% for cert in certifications %}
+                <div class="cert-item">{{ cert }}</div>
+                {% endfor %}
+            </section>
+            {% endif %}
+
+            <section class="education-section">
+                <h2>Education</h2>
+                {% for edu in education %}
+                <div class="education-item">
+                    <div class="degree">{{ edu.degree }}</div>
+                    <div class="edu-duration">{{ edu.school }}</div>
+                    <div class="edu-duration">{{ edu.start_year }} - {{ edu.end_year }}</div>
+                </div>
+                {% endfor %}
+            </section>
+        </aside>
+
+        <main class="main-content">
+            <section class="summary-section">
+                <h2>Professional Summary</h2>
+                <div class="summary">
+                    {{ summary }}
+                </div>
+            </section>
+
+            <section class="experience-section">
+                <h2>Experience</h2>
+
+                {% for job in experience %}
+                <div class="experience-item">
+                    <div class="company">{{ job.company }}</div>
+                    <div class="job-header">
+                        <div class="job-title">{{ job.title }}</div>
+                        <div class="duration">{{ job.start_date }} - {{ job.end_date }}</div>
+                    </div>
+                    <div class="job-description">
+                        {% if job.highlights %}
+                        <ul>
+                            {% for item in job.highlights %}
+                            <li>{% if item.label %}<span class="highlight">{{ item.label }}</span> {% endif %}{{ item.description }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% elif job.description %}
+                        {{ job.description }}
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </section>
+        </main>
+    </div>
+</body>
+</html>

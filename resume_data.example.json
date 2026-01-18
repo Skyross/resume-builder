@@ -1,0 +1,71 @@
+{
+  "name": "Your Name",
+  "title": "Your Job Title",
+  "contact": {
+    "email": "your.email@example.com",
+    "linkedin": "linkedin.com/in/yourprofile",
+    "location": "City, Country",
+    "phone": "",
+    "website": ""
+  },
+  "summary": "A brief professional summary highlighting your experience, skills, and career goals. This should be 2-4 sentences that capture your value proposition.",
+  "experience": [
+    {
+      "company": "Company Name",
+      "title": "Job Title",
+      "start_date": "Jan 2020",
+      "end_date": "Present",
+      "highlights": [
+        {"label": "Achievement:", "description": "Description of your key achievement or responsibility"},
+        {"label": "Project:", "description": "Description of an important project you led or contributed to"},
+        {"label": "Impact:", "description": "Quantifiable impact or result you achieved"}
+      ]
+    },
+    {
+      "company": "Previous Company",
+      "title": "Previous Title",
+      "start_date": "Jun 2017",
+      "end_date": "Dec 2019",
+      "highlights": [
+        {"label": "", "description": "Key responsibility or achievement at this role"},
+        {"label": "", "description": "Another accomplishment or contribution"}
+      ]
+    },
+    {
+      "company": "Earlier Company",
+      "title": "Earlier Title",
+      "start_date": "Mar 2015",
+      "end_date": "May 2017",
+      "description": "Brief description of role and responsibilities (alternative to bullet points)"
+    }
+  ],
+  "skills": [
+    "Skill 1",
+    "Skill 2",
+    "Skill 3",
+    "Skill 4",
+    "Skill 5",
+    "Skill 6",
+    "Skill 7",
+    "Skill 8",
+    "Skill 9",
+    "Skill 10",
+    "Skill 11",
+    "Skill 12"
+  ],
+  "certifications": [
+    "Certification or Course 1",
+    "Certification or Course 2",
+    "Certification or Course 3",
+    "Certification or Course 4"
+  ],
+  "certifications_title": "Certifications",
+  "education": [
+    {
+      "school": "University Name",
+      "degree": "Degree Type, Field of Study",
+      "start_year": "2010",
+      "end_year": "2014"
+    }
+  ]
+}
