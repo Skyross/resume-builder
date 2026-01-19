@@ -16,7 +16,6 @@ from pathlib import Path
 from jinja2 import Environment, FileSystemLoader
 from weasyprint import HTML
 
-
 TEMPLATES = {
     "default": "resume_template.html",
     "minimalist": "resume_template_minimalist.html",
@@ -27,7 +26,7 @@ TEMPLATES = {
 
 def load_resume_data(data_path: str) -> dict:
     """Load resume data from JSON file."""
-    with open(data_path, "r", encoding="utf-8") as f:
+    with Path(data_path).open(encoding="utf-8") as f:
         return json.load(f)
 
 
@@ -107,42 +106,37 @@ Templates:
   minimalist  - Clean grayscale design
   modern      - Bold sidebar with purple gradient
   classic     - Traditional serif with forest green accents
-        """
+        """,
     )
 
     parser.add_argument(
-        "-d", "--data",
+        "-d",
+        "--data",
         type=str,
         default=str(default_data),
-        help=f"Path to JSON data file (default: {default_data.name})"
+        help=f"Path to JSON data file (default: {default_data.name})",
     )
 
     parser.add_argument(
-        "-t", "--template",
+        "-t",
+        "--template",
         type=str,
         default="default",
         choices=list(TEMPLATES.keys()),
-        help="Template style to use (default: default)"
+        help="Template style to use (default: default)",
     )
 
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=str,
         default=str(default_output),
-        help=f"Path for output PDF file (default: {default_output})"
+        help=f"Path for output PDF file (default: {default_output})",
     )
 
-    parser.add_argument(
-        "-v", "--verbose",
-        action="store_true",
-        help="Show verbose output"
-    )
+    parser.add_argument("-v", "--verbose", action="store_true", help="Show verbose output")
 
-    parser.add_argument(
-        "--list-templates",
-        action="store_true",
-        help="List available templates and exit"
-    )
+    parser.add_argument("--list-templates", action="store_true", help="List available templates and exit")
 
     args = parser.parse_args()
 

@@ -5,10 +5,17 @@ build/
 dist/
 wheels/
 *.egg-info
+
+# IDE
 .idea/
+.vscode/
+*.swp
+*.swo
 
 # Virtual environments
 .venv
+venv/
+env/
 
 # Output directory (generated PDFs)
 output/
@@ -17,3 +24,16 @@ output/
 resume_data.json
 my_resume.json
 *.pdf
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+coverage.xml
+*.cover
+
+# Ruff
+.ruff_cache/
+
+# macOS
+.DS_Store
