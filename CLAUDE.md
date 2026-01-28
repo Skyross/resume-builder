@@ -72,6 +72,8 @@ uv run generate_resume.py --list-templates
 | `--data PATH` | `-d` | JSON data file with resume content |
 | `--template NAME` | `-t` | Template style (default, minimalist, modern, classic) |
 | `--output PATH` | `-o` | Output PDF file path |
+| `--meta KEY=VALUE` | `-m` | Set PDF metadata (can be used multiple times) |
+| `--hidden-text TEXT` | `-s` | Custom hidden text embedded in the resume (background-colored, smallest font) |
 | `--verbose` | `-v` | Show verbose output |
 | `--list-templates` | | List available templates |
 | `--help` | `-h` | Show help message |
@@ -92,7 +94,31 @@ uv run generate_resume.py -d my_resume.json -t modern -o Resume_Modern.pdf
 
 # Verbose mode
 uv run generate_resume.py -d my_resume.json -v
+
+# Add hidden text (invisible, for ATS keywords etc.)
+uv run generate_resume.py -d my_resume.json -s "additional keywords here"
+
+# Set PDF metadata
+uv run generate_resume.py -d my_resume.json -m "author=John Doe" -m "title=Resume"
+
+# Set multiple keywords (comma-separated)
+uv run generate_resume.py -d my_resume.json -m "keywords=python,developer,senior"
 ```
+
+### PDF Metadata
+
+The `-m` / `--meta` option sets PDF document properties that are visible in PDF readers under "Document Properties". Each key=value pair sets one property.
+
+**Supported metadata keys:**
+
+| Key | Description |
+|-----|-------------|
+| `title` | PDF document title |
+| `author` | Document author name |
+| `subject` | Document subject/description |
+| `keywords` | Comma-separated keywords for searchability |
+| `creator` | Creating application name |
+| `producer` | PDF producer name |
 
 ## JSON Data Format
 

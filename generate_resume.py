@@ -14,6 +14,7 @@ import json
 from pathlib import Path
 
 from jinja2 import Environment, FileSystemLoader
+from pypdf import PdfReader, PdfWriter
 from weasyprint import HTML
 
 TEMPLATES = {
@@ -37,11 +38,75 @@ def render_template(template_dir: Path, template_name: str, data: dict) -> str:
     return template.render(**data)
 
 
+def parse_metadata(meta_args: list[str] | None) -> dict[str, str] | None:
+    """
+    Parse metadata arguments into a dictionary.
+
+    Args:
+        meta_args: List of "key=value" strings
+
+    Returns:
+        Dictionary of metadata or None if no metadata provided
+    """
+    if not meta_args:
+        return None
+
+    metadata_map = {}
+    for item in meta_args:
+        if "=" not in item:
+            print(f"Warning: Invalid metadata format '{item}', expected 'key=value'")
+            continue
+        key, value = item.split("=", 1)
+        key = key.strip().lower()
+        value = value.strip()
+        metadata_map[key] = value
+
+    return metadata_map if metadata_map else None
+
+
+def apply_pdf_metadata(pdf_path: Path, metadata: dict[str, str]) -> None:
+    """
+    Apply custom metadata to an existing PDF file.
+
+    Args:
+        pdf_path: Path to the PDF file
+        metadata: Dictionary of metadata key-value pairs
+    """
+    reader = PdfReader(pdf_path)
+    writer = PdfWriter()
+
+    # Copy all pages
+    for page in reader.pages:
+        writer.add_page(page)
+
+    # Map user-friendly keys to PDF metadata keys
+    pdf_metadata = {}
+    key_mapping = {
+        "title": "/Title",
+        "author": "/Author",
+        "subject": "/Subject",
+        "keywords": "/Keywords",
+        "creator": "/Creator",
+        "producer": "/Producer",
+    }
+
+    for key, value in metadata.items():
+        pdf_key = key_mapping.get(key, f"/{key.capitalize()}")
+        pdf_metadata[pdf_key] = value
+
+    writer.add_metadata(pdf_metadata)
+
+    # Write to the same file
+    with pdf_path.open("wb") as f:
+        writer.write(f)
+
+
 def generate_resume_pdf(
     template_dir: Path,
     template_name: str,
     data: dict,
     output_path: str,
+    metadata: dict[str, str] | None = None,
 ) -> None:
     """
     Generate PDF from HTML resume template and data.
@@ -51,6 +116,7 @@ def generate_resume_pdf(
         template_name: Name of the template file
         data: Resume data dictionary
         output_path: Path where the PDF will be saved
+        metadata: Optional PDF metadata dictionary
     """
     output_file = Path(output_path)
 
@@ -67,6 +133,11 @@ def generate_resume_pdf(
 
     # Generate PDF from rendered HTML
     HTML(string=html_content, base_url=str(template_dir)).write_pdf(str(output_file))
+
+    # Apply custom metadata if provided
+    if metadata:
+        print("Applying PDF metadata...")
+        apply_pdf_metadata(output_file, metadata)
 
     print(f"Resume PDF generated successfully: {output_file}")
     print(f"File size: {output_file.stat().st_size / 1024:.1f} KB")
@@ -98,6 +169,12 @@ Examples:
   %(prog)s -d data.json -t classic -o MyResume.pdf
       Use classic template with custom output path
 
+  %(prog)s -d data.json -m "author=John Doe" -m "title=Resume"
+      Set PDF metadata fields
+
+  %(prog)s -d data.json -m "keywords=python,developer,senior"
+      Set multiple keywords (comma-separated)
+
   %(prog)s --list-templates
       Show all available template styles
 
@@ -106,6 +183,13 @@ Templates:
   minimalist  - Clean grayscale design
   modern      - Bold sidebar with purple gradient
   classic     - Traditional serif with forest green accents
+
+Metadata keys:
+  title       - PDF document title
+  author      - Document author name
+  subject     - Document subject (alias: description)
+  keywords    - Comma-separated keywords
+  creator     - Creating application (alias: generator)
         """,
     )
 
@@ -137,6 +221,23 @@ Templates:
     parser.add_argument("-v", "--verbose", action="store_true", help="Show verbose output")
 
     parser.add_argument("--list-templates", action="store_true", help="List available templates and exit")
+
+    parser.add_argument(
+        "-m",
+        "--meta",
+        action="append",
+        metavar="KEY=VALUE",
+        help="Set PDF metadata (can be used multiple times). "
+        "Supported keys: title, author, description, subject, keywords, generator, creator",
+    )
+
+    parser.add_argument(
+        "-s",
+        "--hidden-text",
+        type=str,
+        default="",
+        help="Custom hidden text to embed in the resume (same color as background, smallest font)",
+    )
 
     args = parser.parse_args()
 
@@ -172,9 +273,20 @@ Templates:
         print(f"Output: {args.output}")
         print()
 
+    # Parse metadata if provided
+    metadata = parse_metadata(args.meta)
+
+    if args.verbose and metadata:
+        print(f"Metadata: {args.meta}")
+        print()
+
+    # Add hidden text to data if provided
+    if args.hidden_text:
+        data["hidden_text"] = args.hidden_text
+
     # Generate the PDF
     try:
-        generate_resume_pdf(script_dir, template_name, data, args.output)
+        generate_resume_pdf(script_dir, template_name, data, args.output, metadata)
     except Exception as e:
         print(f"Error generating PDF: {e}")
         return 1

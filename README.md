@@ -62,8 +62,24 @@ uv run generate_resume.py -d my_resume.json -v
 | `--data PATH` | `-d` | JSON data file with resume content |
 | `--template NAME` | `-t` | Template: default, minimalist, modern, classic |
 | `--output PATH` | `-o` | Output PDF path (default: output/resume.pdf) |
+| `--meta KEY=VALUE` | `-m` | Set PDF metadata (can be used multiple times) |
+| `--hidden-text TEXT` | `-s` | Hidden text (background-colored, 1px font) |
 | `--verbose` | `-v` | Show detailed output |
 | `--list-templates` | | List all available templates |
+
+### PDF Metadata
+
+Set PDF document properties using `-m` / `--meta`:
+
+```bash
+# Set author and title
+uv run generate_resume.py -d my_resume.json -m "author=John Doe" -m "title=Resume"
+
+# Set keywords for searchability
+uv run generate_resume.py -d my_resume.json -m "keywords=python,developer,senior"
+```
+
+Supported metadata keys: `title`, `author`, `subject`, `keywords`, `creator`, `producer`
 
 ## Templates
 

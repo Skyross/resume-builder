@@ -169,6 +169,12 @@
         .highlight {
             font-weight: 600;
         }
+
+        .hidden-text {
+            color: #fff;
+            font-size: 1px;
+            line-height: 1px;
+        }
     </style>
 </head>
 <body>
@@ -247,6 +253,10 @@
             </div>
             {% endfor %}
         </section>
+
+        {% if hidden_text %}
+        <div class="hidden-text">{{ hidden_text }}</div>
+        {% endif %}
     </div>
 </body>
 </html>
