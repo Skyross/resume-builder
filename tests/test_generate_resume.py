@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from generate_resume import (
+from src.generate_resume import (
     TEMPLATES,
     generate_resume_pdf,
     list_templates,
@@ -40,17 +40,17 @@ class TestLoadResumeData:
 class TestRenderTemplate:
     """Tests for render_template function."""
 
-    def test_render_default_template(self, project_root: Path, sample_resume_data: dict) -> None:
+    def test_render_default_template(self, template_dir: Path, sample_resume_data: dict) -> None:
         """Test rendering the default template."""
-        html = render_template(project_root, TEMPLATES["default"], sample_resume_data)
+        html = render_template(template_dir, TEMPLATES["default"], sample_resume_data)
         assert "Test Person" in html
         assert "Software Engineer" in html
         assert "test@example.com" in html
 
-    def test_render_all_templates(self, project_root: Path, sample_resume_data: dict) -> None:
+    def test_render_all_templates(self, template_dir: Path, sample_resume_data: dict) -> None:
         """Test that all templates can be rendered without errors."""
         for template_name, template_file in TEMPLATES.items():
-            html = render_template(project_root, template_file, sample_resume_data)
+            html = render_template(template_dir, template_file, sample_resume_data)
             assert html, f"Template {template_name} rendered empty content"
             assert sample_resume_data["name"] in html
 
@@ -59,12 +59,12 @@ class TestGenerateResumePdf:
     """Tests for generate_resume_pdf function."""
 
     @pytest.mark.slow
-    def test_generate_pdf(self, project_root: Path, sample_resume_data: dict, tmp_path: Path) -> None:
+    def test_generate_pdf(self, template_dir: Path, sample_resume_data: dict, tmp_path: Path) -> None:
         """Test generating a PDF file."""
         output_path = tmp_path / "test_output.pdf"
 
         generate_resume_pdf(
-            project_root,
+            template_dir,
             TEMPLATES["default"],
             sample_resume_data,
             str(output_path),
@@ -78,13 +78,13 @@ class TestGenerateResumePdf:
 
     @pytest.mark.slow
     def test_generate_pdf_creates_output_dir(
-        self, project_root: Path, sample_resume_data: dict, tmp_path: Path
+        self, template_dir: Path, sample_resume_data: dict, tmp_path: Path
     ) -> None:
         """Test that output directory is created if it doesn't exist."""
         output_path = tmp_path / "new_dir" / "nested" / "output.pdf"
 
         generate_resume_pdf(
-            project_root,
+            template_dir,
             TEMPLATES["default"],
             sample_resume_data,
             str(output_path),
@@ -108,10 +108,10 @@ class TestListTemplates:
 class TestTemplatesDict:
     """Tests for TEMPLATES configuration."""
 
-    def test_all_templates_exist(self, project_root: Path) -> None:
+    def test_all_templates_exist(self, template_dir: Path) -> None:
         """Test that all configured templates exist as files."""
         for template_name, template_file in TEMPLATES.items():
-            template_path = project_root / template_file
+            template_path = template_dir / template_file
             assert template_path.exists(), f"Template {template_name} file not found: {template_file}"
 
     def test_templates_are_html(self) -> None:

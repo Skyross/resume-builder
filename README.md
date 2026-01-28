@@ -24,12 +24,12 @@ cp resume_data.example.json my_resume.json
 # Edit my_resume.json with your information
 
 # 2. Generate your resume
-uv run generate_resume.py -d my_resume.json
+uv run generate-resume -d my_resume.json
 
 # 3. Try different templates
-uv run generate_resume.py -d my_resume.json -t modern
-uv run generate_resume.py -d my_resume.json -t classic
-uv run generate_resume.py -d my_resume.json -t minimalist
+uv run generate-resume -d my_resume.json -t modern
+uv run generate-resume -d my_resume.json -t classic
+uv run generate-resume -d my_resume.json -t minimalist
 ```
 
 ## Installation
@@ -39,26 +39,26 @@ This project uses [uv](https://github.com/astral-sh/uv) for Python package manag
 ```bash
 git clone <repository-url>
 cd resume-builder
-uv run generate_resume.py --help
+uv run generate-resume --help
 ```
 
 ## Usage
 
 ```bash
 # Basic usage
-uv run generate_resume.py -d my_resume.json
+uv run generate-resume -d my_resume.json
 
 # Choose a template
-uv run generate_resume.py -d my_resume.json -t modern
+uv run generate-resume -d my_resume.json -t modern
 
 # Custom output path
-uv run generate_resume.py -d my_resume.json -o ~/Desktop/Resume.pdf
+uv run generate-resume -d my_resume.json -o ~/Desktop/Resume.pdf
 
 # List available templates
-uv run generate_resume.py --list-templates
+uv run generate-resume --list-templates
 
 # Verbose output
-uv run generate_resume.py -d my_resume.json -v
+uv run generate-resume -d my_resume.json -v
 ```
 
 ## Command-Line Options
@@ -79,10 +79,10 @@ Set PDF document properties using `-m` / `--meta`:
 
 ```bash
 # Set author and title
-uv run generate_resume.py -d my_resume.json -m "author=John Doe" -m "title=Resume"
+uv run generate-resume -d my_resume.json -m "author=John Doe" -m "title=Resume"
 
 # Set keywords for searchability
-uv run generate_resume.py -d my_resume.json -m "keywords=python,developer,senior"
+uv run generate-resume -d my_resume.json -m "keywords=python,developer,senior"
 ```
 
 Supported metadata keys: `title`, `author`, `subject`, `keywords`, `creator`, `producer`

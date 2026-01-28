@@ -150,10 +150,16 @@ def list_templates():
         print(f"  {name:12} -> {filename}")
 
 
+def get_project_root() -> Path:
+    """Get the project root directory (parent of src/)."""
+    return Path(__file__).parent.parent
+
+
 def main():
-    script_dir = Path(__file__).parent
-    default_data = script_dir / "resume_data.example.json"
-    default_output = script_dir / "output" / "resume.pdf"
+    project_root = get_project_root()
+    template_dir = project_root / "templates"
+    default_data = project_root / "resume_data.example.json"
+    default_output = project_root / "output" / "resume.pdf"
 
     parser = argparse.ArgumentParser(
         description="Generate a professional PDF resume from HTML template and JSON data",
@@ -261,7 +267,7 @@ Metadata keys:
 
     # Get template filename
     template_name = TEMPLATES[args.template]
-    template_path = script_dir / template_name
+    template_path = template_dir / template_name
 
     if not template_path.exists():
         print(f"Error: Template not found: {template_path}")
@@ -286,7 +292,7 @@ Metadata keys:
 
     # Generate the PDF
     try:
-        generate_resume_pdf(script_dir, template_name, data, args.output, metadata)
+        generate_resume_pdf(template_dir, template_name, data, args.output, metadata)
     except Exception as e:
         print(f"Error generating PDF: {e}")
         return 1

@@ -13,6 +13,12 @@ def project_root() -> Path:
 
 
 @pytest.fixture
+def template_dir(project_root: Path) -> Path:
+    """Return the templates directory."""
+    return project_root / "templates"
+
+
+@pytest.fixture
 def sample_resume_data() -> dict:
     """Return minimal sample resume data for testing."""
     return {

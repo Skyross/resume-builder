@@ -17,12 +17,18 @@ resume-builder/
 ├── CLAUDE.md                        # This file - project documentation
 ├── DESIGN_VARIANTS.md               # Documentation of design variants
 ├── README.md                        # Quick start guide
-├── generate_resume.py               # Python script to generate PDF from HTML + JSON
+├── src/                             # Python source code
+│   ├── __init__.py
+│   └── generate_resume.py           # Main script to generate PDF from HTML + JSON
+├── templates/                       # HTML templates
+│   ├── resume_template.html         # Default template (blue theme)
+│   ├── resume_template_minimalist.html  # Minimalist design (grayscale)
+│   ├── resume_template_modern.html  # Modern sidebar design (purple gradient)
+│   └── resume_template_classic.html # Classic professional (forest green)
+├── tests/                           # Test suite
+│   ├── conftest.py
+│   └── test_generate_resume.py
 ├── resume_data.example.json         # Example data file (copy and customize)
-├── resume_template.html             # Default template (blue theme)
-├── resume_template_minimalist.html  # Minimalist design (grayscale)
-├── resume_template_modern.html      # Modern sidebar design (purple gradient)
-├── resume_template_classic.html     # Classic professional (forest green)
 ├── pyproject.toml                   # UV project configuration
 └── output/                          # Generated PDFs (created automatically)
 ```
@@ -43,19 +49,19 @@ Edit `my_resume.json` with your personal details, experience, skills, etc.
 
 ```bash
 # Using default template
-uv run generate_resume.py -d my_resume.json
+uv run generate-resume -d my_resume.json
 
 # Using a specific template
-uv run generate_resume.py -d my_resume.json -t modern
+uv run generate-resume -d my_resume.json -t modern
 
 # Custom output path
-uv run generate_resume.py -d my_resume.json -o ~/Documents/Resume.pdf
+uv run generate-resume -d my_resume.json -o ~/Documents/Resume.pdf
 ```
 
 ### 3. Available Templates
 
 ```bash
-uv run generate_resume.py --list-templates
+uv run generate-resume --list-templates
 ```
 
 - `default` - Blue theme with modern styling
@@ -82,27 +88,27 @@ uv run generate_resume.py --list-templates
 
 ```bash
 # Generate with default template
-uv run generate_resume.py -d my_resume.json
+uv run generate-resume -d my_resume.json
 
 # Use modern template with custom output
-uv run generate_resume.py -d my_resume.json -t modern -o Modern_Resume.pdf
+uv run generate-resume -d my_resume.json -t modern -o Modern_Resume.pdf
 
 # Generate multiple versions
-uv run generate_resume.py -d my_resume.json -t default -o Resume_Default.pdf
-uv run generate_resume.py -d my_resume.json -t classic -o Resume_Classic.pdf
-uv run generate_resume.py -d my_resume.json -t modern -o Resume_Modern.pdf
+uv run generate-resume -d my_resume.json -t default -o Resume_Default.pdf
+uv run generate-resume -d my_resume.json -t classic -o Resume_Classic.pdf
+uv run generate-resume -d my_resume.json -t modern -o Resume_Modern.pdf
 
 # Verbose mode
-uv run generate_resume.py -d my_resume.json -v
+uv run generate-resume -d my_resume.json -v
 
 # Add hidden text (invisible, for ATS keywords etc.)
-uv run generate_resume.py -d my_resume.json -s "additional keywords here"
+uv run generate-resume -d my_resume.json -s "additional keywords here"
 
 # Set PDF metadata
-uv run generate_resume.py -d my_resume.json -m "author=John Doe" -m "title=Resume"
+uv run generate-resume -d my_resume.json -m "author=John Doe" -m "title=Resume"
 
 # Set multiple keywords (comma-separated)
-uv run generate_resume.py -d my_resume.json -m "keywords=python,developer,senior"
+uv run generate-resume -d my_resume.json -m "keywords=python,developer,senior"
 ```
 
 ### PDF Metadata
@@ -232,10 +238,10 @@ color: #1a4d2e;  /* Forest green */
 
 ### Creating Custom Templates
 
-1. Copy an existing template
+1. Copy an existing template from `templates/`
 2. Modify the CSS styling
 3. Keep the Jinja2 template variables intact
-4. Use with `-t` by adding to `TEMPLATES` in `generate_resume.py`
+4. Use with `-t` by adding to `TEMPLATES` in `src/generate_resume.py`
 
 ## Dependencies
 
@@ -254,7 +260,7 @@ git clone <repository-url>
 cd resume-builder
 
 # Dependencies are managed by uv automatically
-uv run generate_resume.py --help
+uv run generate-resume --help
 ```
 
 ## Troubleshooting
