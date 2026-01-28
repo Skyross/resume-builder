@@ -79,6 +79,9 @@ addopts = [
     "-v",
     "--tb=short",
     "--strict-markers",
+    "--cov=.",
+    "--cov-branch",
+    "--cov-report=term-missing",
 ]
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
@@ -86,9 +89,11 @@ markers = [
 
 [tool.coverage.run]
 source = ["."]
+branch = true
 omit = ["tests/*", ".venv/*"]
 
 [tool.coverage.report]
+precision = 2
 exclude_lines = [
     "pragma: no cover",
     "if __name__ == .__main__.:",

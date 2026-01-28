@@ -1,5 +1,11 @@
 # Resume Builder
 
+[![CI](https://github.com/skyross/resume-builder/actions/workflows/ci.yml/badge.svg)](https://github.com/skyross/resume-builder/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/skyross/resume-builder/graph/badge.svg)](https://codecov.io/gh/skyross/resume-builder)
+[![Python 3.14+](https://img.shields.io/badge/python-3.14+-blue.svg)](https://www.python.org/downloads/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
 A data-driven resume generator that creates professional PDF resumes from customizable HTML templates.
 
 ## Features
