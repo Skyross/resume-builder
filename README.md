@@ -10,6 +10,7 @@ A data-driven resume generator that creates professional PDF resumes from custom
 
 ## Features
 
+- **LinkedIn PDF Import**: Automatically parse your LinkedIn profile export
 - **4 Professional Templates**: Default (blue), Minimalist (grayscale), Modern (purple sidebar), Classic (green serif)
 - **JSON Data Input**: Keep your resume content separate from styling
 - **Jinja2 Templating**: Flexible, powerful template system
@@ -17,6 +18,18 @@ A data-driven resume generator that creates professional PDF resumes from custom
 - **Easy Customization**: Modify templates or create your own
 
 ## Quick Start
+
+### Option A: Import from LinkedIn
+
+```bash
+# 1. Export your LinkedIn profile as PDF (Profile > More > Save to PDF)
+
+# 2. Parse and generate resume
+uv run parse-linkedin -i Profile.pdf -o my_resume.json
+uv run generate-resume -d my_resume.json -t modern
+```
+
+### Option B: Create Manually
 
 ```bash
 # 1. Create your data file
@@ -86,6 +99,29 @@ uv run generate-resume -d my_resume.json -m "keywords=python,developer,senior"
 ```
 
 Supported metadata keys: `title`, `author`, `subject`, `keywords`, `creator`, `producer`
+
+## LinkedIn Parser
+
+Parse your LinkedIn profile PDF export into the JSON format:
+
+```bash
+# Basic usage - output to stdout
+uv run parse-linkedin -i Profile.pdf
+
+# Save to file
+uv run parse-linkedin -i Profile.pdf -o resume_data.json
+
+# Verbose output
+uv run parse-linkedin -i Profile.pdf -o resume_data.json -v
+```
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--input PATH` | `-i` | LinkedIn PDF file (required) |
+| `--output PATH` | `-o` | Output JSON path (default: stdout) |
+| `--verbose` | `-v` | Show extraction details |
+
+**Extracts:** Name, title, contact info, summary, experience, education, skills, certifications
 
 ## Templates
 

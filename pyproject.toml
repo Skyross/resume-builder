@@ -20,6 +20,7 @@ dev = [
 
 [project.scripts]
 generate-resume = "src.generate_resume:main"
+parse-linkedin = "src.parse_linkedin:main"
 
 [build-system]
 requires = ["hatchling"]

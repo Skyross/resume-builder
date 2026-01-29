@@ -19,7 +19,8 @@ resume-builder/
 ├── README.md                        # Quick start guide
 ├── src/                             # Python source code
 │   ├── __init__.py
-│   └── generate_resume.py           # Main script to generate PDF from HTML + JSON
+│   ├── generate_resume.py           # Main script to generate PDF from HTML + JSON
+│   └── parse_linkedin.py            # LinkedIn PDF parser
 ├── templates/                       # HTML templates
 │   ├── resume_template.html         # Default template (blue theme)
 │   ├── resume_template_minimalist.html  # Minimalist design (grayscale)
@@ -27,7 +28,8 @@ resume-builder/
 │   └── resume_template_classic.html # Classic professional (forest green)
 ├── tests/                           # Test suite
 │   ├── conftest.py
-│   └── test_generate_resume.py
+│   ├── test_generate_resume.py
+│   └── test_parse_linkedin.py
 ├── resume_data.example.json         # Example data file (copy and customize)
 ├── pyproject.toml                   # UV project configuration
 └── output/                          # Generated PDFs (created automatically)
@@ -35,7 +37,19 @@ resume-builder/
 
 ## Quick Start
 
-### 1. Create Your Data File
+### Option A: Parse from LinkedIn PDF
+
+If you have a LinkedIn profile PDF export, you can automatically convert it:
+
+```bash
+# Parse LinkedIn PDF to JSON
+uv run parse-linkedin -i Profile.pdf -o my_resume.json
+
+# Generate resume from parsed data
+uv run generate-resume -d my_resume.json
+```
+
+### Option B: Create Data File Manually
 
 Copy the example and fill in your information:
 
@@ -125,6 +139,62 @@ The `-m` / `--meta` option sets PDF document properties that are visible in PDF 
 | `keywords` | Comma-separated keywords for searchability |
 | `creator` | Creating application name |
 | `producer` | PDF producer name |
+
+## LinkedIn PDF Parser
+
+The `parse-linkedin` command converts LinkedIn exported PDF profiles into the JSON format used by the resume generator.
+
+### How to Export Your LinkedIn Profile
+
+1. Go to your LinkedIn profile
+2. Click "More" button below your profile photo
+3. Select "Save to PDF"
+4. Save the downloaded PDF file
+
+### Parser Command-Line Options
+
+| Option | Short | Description |
+|--------|-------|-------------|
+| `--input PATH` | `-i` | LinkedIn PDF file path (required) |
+| `--output PATH` | `-o` | Output JSON file path (default: stdout) |
+| `--verbose` | `-v` | Show verbose output |
+| `--pretty` | | Pretty-print JSON output (default: True) |
+| `--help` | `-h` | Show help message |
+
+### Parser Examples
+
+```bash
+# Parse and output to stdout
+uv run parse-linkedin -i Profile.pdf
+
+# Parse and save to file
+uv run parse-linkedin -i Profile.pdf -o resume_data.json
+
+# Parse with verbose output
+uv run parse-linkedin -i Profile.pdf -o resume_data.json -v
+
+# One-liner: parse and generate resume
+uv run parse-linkedin -i Profile.pdf -o data.json && uv run generate-resume -d data.json -t modern
+```
+
+### What Gets Parsed
+
+The parser extracts the following from LinkedIn PDFs:
+
+- **Name and Title** - Your name and professional headline
+- **Contact Info** - Email, LinkedIn URL, location
+- **Summary** - Your LinkedIn summary/about section
+- **Experience** - All work history with dates and descriptions
+- **Education** - Schools, degrees, and dates
+- **Skills** - Top skills listed on your profile
+- **Certifications** - Certifications and courses
+
+### Limitations
+
+- LinkedIn PDFs can have inconsistent formatting depending on profile content
+- Very long descriptions may be truncated in the PDF export
+- Some special characters may not render correctly
+- Languages section is parsed but not included in resume output
 
 ## JSON Data Format
 
@@ -287,6 +357,11 @@ This is a harmless WeasyPrint warning. The PDF generates correctly.
 If required fields are missing, the template may render with empty sections. Check your JSON has all required fields.
 
 ## Version History
+
+### v2.1
+- Added LinkedIn PDF parser (`parse-linkedin` command)
+- Automatically extract profile data from LinkedIn PDF exports
+- Convert to JSON format compatible with resume generator
 
 ### v2.0
 - Complete rewrite with Jinja2 templating
