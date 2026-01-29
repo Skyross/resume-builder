@@ -2,15 +2,18 @@
 
 import json
 from pathlib import Path
+from unittest.mock import patch
 
 import pytest
 
 from src.generate_resume import (
     TEMPLATES,
+    apply_pdf_metadata,
     generate_resume_pdf,
     list_templates,
     load_resume_data,
     main,
+    parse_metadata,
     render_template,
 )
 
@@ -120,6 +123,110 @@ class TestTemplatesDict:
             assert template_file.endswith(".html")
 
 
+class TestParseMetadata:
+    """Tests for parse_metadata function."""
+
+    def test_parse_valid_metadata(self) -> None:
+        """Test parsing valid key=value pairs."""
+        meta_args = ["title=My Resume", "author=John Doe"]
+        result = parse_metadata(meta_args)
+        assert result is not None
+        assert result["title"] == "My Resume"
+        assert result["author"] == "John Doe"
+
+    def test_parse_metadata_with_equals_in_value(self) -> None:
+        """Test that values can contain equals signs."""
+        meta_args = ["subject=Test = Subject"]
+        result = parse_metadata(meta_args)
+        assert result is not None
+        assert result["subject"] == "Test = Subject"
+
+    def test_parse_metadata_strips_whitespace(self) -> None:
+        """Test that keys and values are stripped."""
+        meta_args = ["  title  =  Spaced Title  "]
+        result = parse_metadata(meta_args)
+        assert result is not None
+        assert result["title"] == "Spaced Title"
+
+    def test_parse_metadata_none_input(self) -> None:
+        """Test that None input returns None."""
+        result = parse_metadata(None)
+        assert result is None
+
+    def test_parse_metadata_empty_list(self) -> None:
+        """Test that empty list returns None."""
+        result = parse_metadata([])
+        assert result is None
+
+    def test_parse_metadata_invalid_format_warning(self, capsys) -> None:
+        """Test that invalid format prints warning."""
+        meta_args = ["invalid_no_equals"]
+        result = parse_metadata(meta_args)
+        captured = capsys.readouterr()
+        assert "Warning:" in captured.out
+        assert "invalid_no_equals" in captured.out
+        assert result is None
+
+    def test_parse_metadata_mixed_valid_invalid(self, capsys) -> None:
+        """Test mixed valid and invalid entries."""
+        meta_args = ["title=Valid", "invalid", "author=Also Valid"]
+        result = parse_metadata(meta_args)
+        assert result is not None
+        assert result["title"] == "Valid"
+        assert result["author"] == "Also Valid"
+        captured = capsys.readouterr()
+        assert "Warning:" in captured.out
+
+
+class TestApplyPdfMetadata:
+    """Tests for apply_pdf_metadata function."""
+
+    @pytest.mark.slow
+    def test_apply_standard_metadata(self, template_dir: Path, sample_resume_data: dict, tmp_path: Path) -> None:
+        """Test applying standard PDF metadata fields."""
+        output_path = tmp_path / "test_meta.pdf"
+
+        # First generate a PDF
+        generate_resume_pdf(
+            template_dir,
+            TEMPLATES["default"],
+            sample_resume_data,
+            str(output_path),
+        )
+
+        # Apply metadata
+        metadata = {
+            "title": "Test Title",
+            "author": "Test Author",
+            "subject": "Test Subject",
+            "keywords": "test,keywords",
+        }
+        apply_pdf_metadata(output_path, metadata)
+
+        # Verify PDF is still valid
+        assert output_path.exists()
+        with output_path.open("rb") as f:
+            assert f.read(4) == b"%PDF"
+
+    @pytest.mark.slow
+    def test_apply_custom_metadata_key(self, template_dir: Path, sample_resume_data: dict, tmp_path: Path) -> None:
+        """Test applying custom (non-standard) metadata keys."""
+        output_path = tmp_path / "test_custom_meta.pdf"
+
+        generate_resume_pdf(
+            template_dir,
+            TEMPLATES["default"],
+            sample_resume_data,
+            str(output_path),
+        )
+
+        # Apply custom metadata key not in standard mapping
+        metadata = {"customfield": "Custom Value"}
+        apply_pdf_metadata(output_path, metadata)
+
+        assert output_path.exists()
+
+
 class TestMain:
     """Tests for main CLI function."""
 
@@ -161,3 +268,135 @@ class TestMain:
         result = main()
         assert result == 0
         assert output_path.exists()
+
+    @pytest.mark.slow
+    def test_main_verbose_output(self, monkeypatch, capsys, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test verbose flag produces additional output."""
+        output_path = tmp_path / "verbose_output.pdf"
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "generate_resume.py",
+                "-d",
+                str(sample_data_file),
+                "-o",
+                str(output_path),
+                "-v",
+            ],
+        )
+        result = main()
+        assert result == 0
+        captured = capsys.readouterr()
+        assert "Data file:" in captured.out
+        assert "Template:" in captured.out
+        assert "Output:" in captured.out
+
+    @pytest.mark.slow
+    def test_main_verbose_with_metadata(self, monkeypatch, capsys, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test verbose output includes metadata information."""
+        output_path = tmp_path / "verbose_meta.pdf"
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "generate_resume.py",
+                "-d",
+                str(sample_data_file),
+                "-o",
+                str(output_path),
+                "-v",
+                "-m",
+                "title=Test Resume",
+            ],
+        )
+        result = main()
+        assert result == 0
+        captured = capsys.readouterr()
+        assert "Metadata:" in captured.out
+
+    @pytest.mark.slow
+    def test_main_with_metadata(self, monkeypatch, capsys, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test generating PDF with metadata."""
+        output_path = tmp_path / "with_meta.pdf"
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "generate_resume.py",
+                "-d",
+                str(sample_data_file),
+                "-o",
+                str(output_path),
+                "-m",
+                "author=John Doe",
+                "-m",
+                "title=My Resume",
+            ],
+        )
+        result = main()
+        assert result == 0
+        captured = capsys.readouterr()
+        assert "Applying PDF metadata" in captured.out
+
+    @pytest.mark.slow
+    def test_main_with_hidden_text(self, monkeypatch, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test generating PDF with hidden text."""
+        output_path = tmp_path / "hidden_text.pdf"
+        monkeypatch.setattr(
+            "sys.argv",
+            [
+                "generate_resume.py",
+                "-d",
+                str(sample_data_file),
+                "-o",
+                str(output_path),
+                "-s",
+                "extra keywords for ATS",
+            ],
+        )
+        result = main()
+        assert result == 0
+        assert output_path.exists()
+
+    def test_main_template_not_found(self, monkeypatch, capsys, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test error when template file doesn't exist."""
+        output_path = tmp_path / "output.pdf"
+        # Patch TEMPLATES to point to nonexistent file
+        with patch.dict(
+            "src.generate_resume.TEMPLATES",
+            {"default": "nonexistent_template.html"},
+        ):
+            monkeypatch.setattr(
+                "sys.argv",
+                [
+                    "generate_resume.py",
+                    "-d",
+                    str(sample_data_file),
+                    "-o",
+                    str(output_path),
+                ],
+            )
+            result = main()
+        assert result == 1
+        captured = capsys.readouterr()
+        assert "Template not found" in captured.out
+
+    def test_main_pdf_generation_error(self, monkeypatch, capsys, sample_data_file: Path, tmp_path: Path) -> None:
+        """Test error handling when PDF generation fails."""
+        output_path = tmp_path / "output.pdf"
+        with patch(
+            "src.generate_resume.generate_resume_pdf",
+            side_effect=Exception("PDF generation failed"),
+        ):
+            monkeypatch.setattr(
+                "sys.argv",
+                [
+                    "generate_resume.py",
+                    "-d",
+                    str(sample_data_file),
+                    "-o",
+                    str(output_path),
+                ],
+            )
+            result = main()
+        assert result == 1
+        captured = capsys.readouterr()
+        assert "Error generating PDF" in captured.out
