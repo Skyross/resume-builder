@@ -12,6 +12,7 @@ Usage:
 import argparse
 import json
 from pathlib import Path
+from typing import cast
 
 from jinja2 import Environment, FileSystemLoader
 from pypdf import PdfReader, PdfWriter
@@ -25,13 +26,13 @@ TEMPLATES = {
 }
 
 
-def load_resume_data(data_path: str) -> dict:
+def load_resume_data(data_path: str) -> dict[str, object]:
     """Load resume data from JSON file."""
     with Path(data_path).open(encoding="utf-8") as f:
-        return json.load(f)
+        return cast(dict[str, object], json.load(f))
 
 
-def render_template(template_dir: Path, template_name: str, data: dict) -> str:
+def render_template(template_dir: Path, template_name: str, data: dict[str, object]) -> str:
     """Render HTML template with resume data using Jinja2."""
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template(template_name)
@@ -104,7 +105,7 @@ def apply_pdf_metadata(pdf_path: Path, metadata: dict[str, str]) -> None:
 def generate_resume_pdf(
     template_dir: Path,
     template_name: str,
-    data: dict,
+    data: dict[str, object],
     output_path: str,
     metadata: dict[str, str] | None = None,
 ) -> None:
@@ -143,7 +144,7 @@ def generate_resume_pdf(
     print(f"File size: {output_file.stat().st_size / 1024:.1f} KB")
 
 
-def list_templates():
+def list_templates() -> None:
     """Print available templates."""
     print("Available templates:")
     for name, filename in TEMPLATES.items():
@@ -155,7 +156,7 @@ def get_project_root() -> Path:
     return Path(__file__).parent.parent
 
 
-def main():
+def main() -> int:
     project_root = get_project_root()
     template_dir = project_root / "templates"
     default_data = project_root / "resume_data.example.json"

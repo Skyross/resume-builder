@@ -13,8 +13,51 @@ import json
 import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
+from typing import TypedDict
 
 from pypdf import PdfReader
+
+
+class ContactDict(TypedDict):
+    """Type for contact information dictionary."""
+
+    email: str
+    linkedin: str
+
+
+class SidebarSections(TypedDict):
+    """Type for sidebar sections extracted from LinkedIn PDF."""
+
+    contact: ContactDict
+    top_skills: list[str]
+    languages: list[str]
+    certifications: list[str]
+
+
+class ExperienceDict(TypedDict):
+    """Type for experience entry dictionary."""
+
+    company: str
+    title: str
+    start_date: str
+    end_date: str
+    description: str
+
+
+class EducationDict(TypedDict):
+    """Type for education entry dictionary."""
+
+    school: str
+    degree: str
+    start_year: str
+    end_year: str
+
+
+class HighlightDict(TypedDict):
+    """Type for highlight entry dictionary."""
+
+    label: str
+    description: str
 
 
 @dataclass
@@ -47,9 +90,9 @@ class Experience:
     description: str = ""
     highlights: list[Highlight] = field(default_factory=list)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         """Convert to dict, excluding empty fields."""
-        result = {
+        result: dict[str, object] = {
             "company": self.company,
             "title": self.title,
             "start_date": self.start_date,
@@ -86,7 +129,7 @@ class ResumeData:
     certifications_title: str = "Certifications"
     education: list[Education] = field(default_factory=list)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, object]:
         """Convert to dictionary for JSON serialization."""
         return {
             "name": self.name,
@@ -184,9 +227,9 @@ def find_section_indices(lines: list[str]) -> dict[str, int]:
     return sections
 
 
-def extract_sidebar_sections(lines: list[str], section_indices: dict[str, int]) -> dict:
+def extract_sidebar_sections(lines: list[str], section_indices: dict[str, int]) -> SidebarSections:
     """Extract sidebar sections: Contact, Top Skills, Languages, Certifications."""
-    result = {
+    result: SidebarSections = {
         "contact": {"email": "", "linkedin": ""},
         "top_skills": [],
         "languages": [],
@@ -348,9 +391,9 @@ def extract_summary(lines: list[str], section_indices: dict[str, int]) -> str:
     return " ".join(summary_lines)
 
 
-def extract_experience(text: str) -> list[dict]:
+def extract_experience(text: str) -> list[ExperienceDict]:
     """Extract work experience entries from the full text."""
-    experiences = []
+    experiences: list[ExperienceDict] = []
 
     # Find Experience section
     exp_match = re.search(r"\nExperience\n", text)
@@ -432,9 +475,9 @@ def extract_experience(text: str) -> list[dict]:
     return experiences
 
 
-def extract_education(text: str) -> list[dict]:
+def extract_education(text: str) -> list[EducationDict]:
     """Extract education entries from the full text."""
-    education = []
+    education: list[EducationDict] = []
 
     # Find Education section
     edu_match = re.search(r"\nEducation\n", text)
@@ -538,7 +581,7 @@ def extract_education(text: str) -> list[dict]:
     return education
 
 
-def parse_experience_highlights(description: str) -> list[dict] | str:
+def parse_experience_highlights(description: str) -> list[HighlightDict] | str:
     """Convert description with bullet points to highlights format."""
     if not description:
         return ""
@@ -547,7 +590,7 @@ def parse_experience_highlights(description: str) -> list[dict] | str:
     if "- " in description:
         # Split by bullet points
         parts = re.split(r"(?:^|\s)- ", description)
-        highlights = []
+        highlights: list[HighlightDict] = []
 
         for part in parts:
             part = part.strip()
@@ -573,7 +616,13 @@ def parse_experience_highlights(description: str) -> list[dict] | str:
 
 
 def convert_to_resume_format(
-    sidebar: dict, name: str, title: str, location: str, summary: str, experience: list[dict], education: list[dict]
+    sidebar: SidebarSections,
+    name: str,
+    title: str,
+    location: str,
+    summary: str,
+    experience: list[ExperienceDict],
+    education: list[EducationDict],
 ) -> ResumeData:
     """Convert all parsed data to the ResumeData dataclass."""
     contact = Contact(
@@ -676,7 +725,7 @@ def parse_linkedin_pdf(pdf_path: str) -> ResumeData:
     return resume
 
 
-def main():
+def main() -> int:
     parser = argparse.ArgumentParser(
         description="Parse LinkedIn exported PDF and convert to JSON format for resume generation",
         formatter_class=argparse.RawDescriptionHelpFormatter,
